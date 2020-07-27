@@ -202,5 +202,51 @@ JTEKT
 
 ---
 JTEKT
+--
+
+Sub Macro1()
+
+    Dim wb As Workbook      'ワークブック
+    Dim ws As Worksheet     'ワークシート
+    Dim companyName As String
+    Dim kiban As String
+    Dim questionnaireDate As String
+    Dim fileDir As String
+    Dim fileName As String
+    
+    '自ワークブック
+    Set wb = ThisWorkbook
+    'アクティブシート
+    Set ws = ActiveSheet
+
+    Worksheets(2).Copy
+
+    Range("A1:C1").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
+        , SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    
+    Columns("D:O").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    companyName = ws.Range("C7").Value
+    kiban = ws.Range("C13").Value
+    questionnaireDate = Format(Left(ws.Range("C14").Value, 10), "yymmdd")
+    
+    Debug.Print (questionnaireDate)
+    
+    fileDir = "\\172.16.38.10\disk1\09_企画G\松川temp\未登録"
+    fileName = companyName + kiban + questionnaireDate
+    filePath = fileDir + "\" + fileName
+    
+    ActiveWorkbook.SaveAs filePath
+    ActiveWorkbook.Close
+
+
+End Sub
 
 
