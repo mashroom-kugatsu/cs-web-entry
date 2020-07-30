@@ -3247,3 +3247,5 @@ order by HIKIAI_DATE asc
 
 
 ;
+登録場所
+C:\Users\00183338\Box\DEPT_カスタマーサポート部\150_満足度調査 お客様相談センター管理\web返信
