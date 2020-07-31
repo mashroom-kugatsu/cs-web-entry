@@ -126,3 +126,55 @@ create table order_backlog_summary as(
 	ob.naig = '1'
 )
 ----------
+copy manufacturing_cost_record_monthly_bo 
+from 'power_bi/manufacturing_cost_record_monthly_2004.txt'(delimiter '	', format csv, header true)
+
+
+drop table manufacturing_cost_record_monthly_summary;
+create table manufacturing_cost_record_monthly_summary as(
+with pre_summary as(
+select
+	GOGU
+   ,HINB
+   ,to_char(cast(case
+		    when length(KJYM) = 0 then null
+		     else KJYM||'01'
+		     end as date),'yymm') as record_yymm
+   ,cast(case
+		    when length(KJYM) = 0 then null
+		     else KJYM||'01'
+		     end as date) as record_yymmdd
+   ,trim(KUMI)
+   ,KISY
+   ,cast(to_number(KJYH, 'FM999,999,999,999.000')as numeric)as KJYH
+   ,cast(to_number(KAKH, 'FM999,999,999,999.000')as numeric)as KAKH
+   ,cast(to_number(KANR, 'FM999,999,999,999.000')as numeric)as KANR
+   ,KUBN
+   ,case
+       when substr(GOGU, 1, 2) in ('CS') then 'CS'
+	   when substr(GOGU, 1, 1) in ('C')  and substr(GOGU, 2, 1) not in ('S') then 'CP'
+	   when substr(GOGU, 1, 1) in ('S') then 'SP'
+	   else 'その他' end as goki_category
+    ,case
+        when trim(KUMI) in ('322') then 'SE3組'
+		when trim(KUMI) in ('551') then 'SE1組'
+		when trim(KUMI) in ('553') then 'SE11組'
+		when trim(KUMI) in ('554') then 'SE21組'
+		when trim(KUMI) in ('556') then 'SE2組'
+		when trim(KUMI) in ('520') then 'SE12組'
+		when trim(KUMI) in ('521') then 'SE22組'
+		when trim(KUMI) in ('559') then '海外旅費・テクサ室フィールド支援'
+		else 'その他' end as group_name
+	,case
+	    when trim(KJYM) in ('201904', '201905', '201906', '201907', '201908', '201909') then 8823.20
+	    when trim(KJYM) in ('201910', '201911', '201912', '202001', '202002', '202003') then 8906
+	    when trim(KJYM) in ('202004', '202005', '202006', '202007', '202008', '202009') then 8140.89
+		else '0' end as rate
+from
+	manufacturing_cost_record_monthly_bo)
+	select 
+	*
+	,kakh/rate as new_kjyh
+	from pre_summary
+	where group_name <> 'その他'
+)
