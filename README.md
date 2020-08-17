@@ -1,60 +1,7 @@
+[受注]
+号機	データ受領日	納入先コード	事業部区分	地区コード	機械名	業種コード	機種コード	営業集計コード	製品区分	内外区分	仮決定区分	納期年月	売上区分	検収予定日	受注金額	見積製造原価	府県コード	国内海外区分	バリューチェーン区分コード	バリューチェーン区分名称
+[販売]
+受注年月日	機番	受注先コード	納入先コード	機械名称	地区コード	内外区分	製品区分	売上区分	検収区分	納入先業種コード	機種コード	営業機種集計コード	売上年月日	検収年月日	正異区分	売上数	売上金額	事業部区分	売上処理月	経理集計コード	府県コード	工メ区分	国内海外区分	売上事業場	バリューチェーン区分コード	バリューチェーン区分名称	アフタービジネス名称	検収年月日_号機	リース区分	プロジェクトNo	プロジェクト名称
+[引合]
+引合No	引合日	担当者コード	担当者名	地区コード	地区名称	製品種別コード	製品種別名称	取引先コード(納入先)	取引先名称(納入先)正式	国都道府県コード（納入先）	都道府県、国	規模コード（納入先）	規模名称	国内外区分コード	国内外区分名称	業種コード（納入先）	業種詳細名称	内販外販区分コード	内販外販区分名称	機種コード	製品名称（営業）	引合ランクコード	受注予定金額	希望納期日	受注予定日	検収予定日	決着日	勝負区分コード	バリューチェーン区分コード	バリューチェーン区分名称	アフタービジネス名称
 
----
-マクロ
-
-Sub Macro1()
-
-    Dim wb As Workbook      'ワークブック
-    Dim ws As Worksheet     'ワークシート
-    Dim companyName As String
-    Dim kiban As String
-    Dim questionnaireDate As String
-    Dim saveDir As String
-    Dim fileName As String
-    Dim userName As String
-    
-    '自ワークブック
-    Set wb = ThisWorkbook
-    'アクティブシート
-    Set ws = ActiveSheet
-
-    Worksheets(2).Copy
-
-    Range("A1:C1").Select
-    Range(Selection, Selection.End(xlDown)).Select
-    Selection.Copy
-    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
-        , SkipBlanks:=False, Transpose:=False
-    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-        :=False, Transpose:=False
-    Application.CutCopyMode = False
-    
-    Columns("D:O").Select
-    Selection.Delete Shift:=xlToLeft
-    
-    companyName = ws.Range("C7").Value
-    kiban = ws.Range("C13").Value
-    questionnaireDate = Format(Left(ws.Range("C14").Value, 10), "yymmdd")
-    
-    Debug.Print (questionnaireDate)
-    
- 
-    ' ログインユーザー名を取得する
-    userName = CreateObject("WScript.Network").userName
-    
-    saveDir = "C:\Users\" + userName + "\Box\test" + "\" + Format(Date, "yyyymmdd")
-    ' saveDir = "C:\Users\" + userName + "\Box\DEPT_カスタマーサポート部\150_満足度調査 お客様相談センター管理\web返信\" + Format(Date, "yyyymmdd")
-    ' C:\Users\00183338\Box\DEPT_カスタマーサポート部\150_満足度調査 お客様相談センター管理\web返信
-    fileName = companyName + "_" + kiban + "_" + questionnaireDate
-    filePath = saveDir + "\" + fileName
-    
-    If Dir(saveDir, vbDirectory) = "" Then
-        MkDir saveDir
-    End If
-    
-    
-    ActiveWorkbook.SaveAs filePath
-    ActiveWorkbook.Close
-
-
-End Sub
